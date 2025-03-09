@@ -6,7 +6,7 @@ function App() {
   useEffect(() => {
     const {text} = fetch(`/api/processImage`);
     setData(text);
-  });
+  }, [setData]);
 
   return <div>{data}</div>;
 }
