@@ -4,7 +4,7 @@ function App() {
   const [data, setData] = useState('');
 
   useEffect(() => {
-    const {text} = await(fetch(`/api/processImage`));
+    const {text} = fetch(`/api/processImage`);
     setData(text);
   });
 
