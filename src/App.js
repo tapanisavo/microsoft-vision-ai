@@ -4,10 +4,8 @@ function App() {
   const [data, setData] = useState('');
 
   useEffect(() => {
-    (async function () {
-      const { text } = await(await fetch(`/api/processImage`)).json();
-      setData(text);
-    })();
+    const {text} = await(fetch(`/api/processImage`));
+    setData(text);
   });
 
   return <div>{data}</div>;

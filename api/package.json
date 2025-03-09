@@ -2,9 +2,7 @@
   "name": "api",
   "version": "1.0.0",
   "description": "",
-  "scripts": {
-    "start": "npx swa start build --api-location api"
-  },
+  "scripts": {},
   "dependencies": {
     "@azure/functions": "^4.0.0"
   },

@@ -11,6 +11,7 @@
     "react-scripts": "^5.0.1"
   },
   "scripts": {
+    "api": "npx swa start build --api-location api",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -32,6 +33,7 @@
     ]
   },
   "devDependencies": {
-    "@azure/static-web-apps-cli": "^2.0.4"
+    "@azure/static-web-apps-cli": "^2.0.4",
+    "react-app-rewired": "^2.2.1"
   }
 }
