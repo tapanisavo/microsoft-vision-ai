@@ -16,6 +16,7 @@ function App() {
 
           reader.onloadend = (event) => {
             setPreviewImageUrl(event.target.result);
+            processImage(event.target.result);
           };
 
           reader.readAsDataURL(file);
@@ -27,14 +28,29 @@ function App() {
     }    
   }, [setPreviewImageUrl]);
 
+  const [imageContents, setImageContents] = useState('')
+
+  function processImage(value) {
+    fetch('/api/processImage', {
+      method: "POST",
+      headers: {'Content-Type': 'application/json'},
+      body: {imageUrl: value}
+    })
+    .then(response => response.json())
+    .then(json => setImageContents(json.text))
+    .catch(() => setImageContents('Failed to read image!'));    
+  }
+
   return (
     <div>
       <input ref={ref} type="file" name="file" accept='image/*' />
       {
         previewImageUrl ?
-        <img src={previewImageUrl} style={{ display: 'block', height: '200px' }} alt="Preview" /> :
-        null
+          <img src={previewImageUrl} style={{ display: 'block', height: '200px' }} alt="Preview" /> :
+          null
       }
+
+      <div className='response'>{imageContents}</div>
     </div>
   );
 }
