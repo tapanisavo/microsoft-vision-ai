@@ -29,7 +29,7 @@ function App() {
         }
       })
     }    
-  }, [setPreviewImageUrl, setRawResponse, setTableData, processImage]);
+  }, [setPreviewImageUrl, setRawResponse, setTableData]);
 
   function processImage(value) {
     fetch('/api/processImage', {
