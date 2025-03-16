@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {},
   "dependencies": {
+    "@azure-rest/ai-document-intelligence": "^1.0.0",
     "@azure/functions": "^4.0.0",
     "dotenv": "^16.4.7"
   },
