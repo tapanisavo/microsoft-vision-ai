@@ -8,37 +8,41 @@ const endpoint = process.env.MICROSOFT_VISION_AI_ENDPOINT;
 const key = process.env.MICROSOFT_VISION_AI_SECRET;
 
 app.http('processImage', {
-    methods: ['POST'],
+    methods: ['GET','POST'],
     authLevel: 'anonymous',
-    handler: ({ imageUrl }, __) => ({jsonBody: {result: processImage(imageUrl)}})
+    handler: async (request, context) => {
+        context.log('Creating client');
+        const client = DocumentIntelligence(endpoint, {key: key});
+
+        context.log('Sending the image');
+        const initialResponse = await client
+            .path("/documentModels/{modelId}:analyze", "prebuilt-receipt")
+            .post({
+                contentType: "application/json",
+                body: {
+                    base64Source: request.params.imageUrl
+                }
+            });
+
+        context.log('Image sent');
+        if (isUnexpected(initialResponse)) {
+            return {body: JSON.stringify({result: initialResponse.body.error})};
+        }
+
+        context.log('Polling the results...');
+        const poller = await getLongRunningPoller(client, initialResponse);
+
+        // Some hack to check if the poller has the polling function, 
+        // since sometimes getLongRunningPoller returns the actual results instead of a poller
+        if (Object.prototype.hasOwnProperty.call(poller, 'pollUntilDone')) {
+            context.log('Returning polled result');
+            return {body: JSON.stringify({result:(await poller.pollUntilDone()).body}) };
+        }
+        else if (Object.prototype.hasOwnProperty.call(poller, 'body')) {
+            context.log('Returning direct result');
+            return {body: JSON.stringify({result:poller.body}) };
+        }
+        
+        return {body: JSON.stringify({result: 'Image processing failed!'})};
+    }
 });
-
-async function processImage(imageUrl) {
-    // const client = DocumentIntelligence(endpoint, {key: key});
-    // const initialResponse = await client
-    //     .path("/documentModels/{modelId}:analyze", "prebuilt-receipt")
-    //     .post({
-    //     contentType: "application/json",
-    //     body: {
-    //         base64Source: imageUrl
-    //     }
-    // });
-
-    // if (isUnexpected(initialResponse)) {
-    //     return initialResponse.body.error;
-    // }
-
-    // await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // const poller = await getLongRunningPoller(client, initialResponse);
-    // // Some hack to check if the poller has the polling function, 
-    // // since sometimes getLongRunningPoller returns the actual results instead of a poller
-    // if (Object.prototype.hasOwnProperty.call(poller, 'pollUntilDone')) {
-    //     return (await poller.pollUntilDone()).body;
-    // }
-    // else if (Object.prototype.hasOwnProperty.call(poller, 'body')) {
-    //     return poller.body;
-    // }
-    
-    return 'Image processing failed!';
-}

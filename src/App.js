@@ -22,7 +22,6 @@ function App() {
 
           reader.onloadend = (event) => {
             setPreviewImageUrl(event.target.result);
-            processImage(event.target.result.split(',')[1]);
           };
 
           reader.readAsDataURL(file);
@@ -31,22 +30,36 @@ function App() {
     }    
   });
 
+  const [pendingImageUrl, setPendingImageUrl] = useState('');
+
+  function onSendImageClick() {
+    const base64 = previewImageUrl.split(',')[1];
+
+    if (base64) {
+      setPendingImageUrl(previewImageUrl);
+      processImage(base64);
+    }
+  }
+
   function processImage(value) {
     fetch('/api/processImage', {
       method: "POST",
       headers: {'Content-Type': 'application/json'},
-      body: {imageUrl: value}
+      body: JSON.stringify({imageUrl: value})
     })
     .then(response => response.json())
     .then(json => processResults(json.result))
     .catch((error) => {
       console.log(error);
+      setPendingImageUrl('');
       setRawResponse('Failed to read image!');
     });    
   }
 
   function processResults(json) {
-    if (json.status !== "succeeded") {
+    setPendingImageUrl('');
+
+    if (json.status !== "succeeded") {      
       setRawResponse('Failed to process image!');
       return;
     }
@@ -86,11 +99,18 @@ function App() {
   }
 
   return (
-    <div>
-      <input ref={ref} type="file" name="file" accept='image/*' />
+    <div style={{ padding: '20px 40px' }}>
+      <input ref={ref} type="file" name="file" accept='image/*' style={{marginBottom: '20px'}} />
       {
         previewImageUrl ?
-          <img src={previewImageUrl} style={{ display: 'block', height: '200px' }} alt="Preview" /> :
+          <div>            
+            <img src={previewImageUrl} style={{ display: 'block', height: '200px' }} alt="Preview" />
+            <button 
+              disabled={pendingImageUrl === previewImageUrl} 
+              style={{display: 'block', margin: '20px 0', padding: '10px', width:'150px'}}
+              onClick={onSendImageClick.bind(this)}
+            >Send</button>
+          </div> :
           null
       }
       
