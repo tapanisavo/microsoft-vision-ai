@@ -7,24 +7,24 @@ const { getLongRunningPoller, isUnexpected } = require("@azure-rest/ai-document-
 const endpoint = process.env.MICROSOFT_VISION_AI_ENDPOINT;
 const key = process.env.MICROSOFT_VISION_AI_SECRET;
 
-app.http('processImage', {
-    methods: ['GET','POST'],
+app.http('processInvoice', {
+    methods: ['POST'],
     authLevel: 'anonymous',
     handler: async (request, context) => {
         context.log('Creating client');
         const client = DocumentIntelligence(endpoint, {key: key});
 
-        context.log('Sending the image');
+        context.log('Sending the file');
         const initialResponse = await client
-            .path("/documentModels/{modelId}:analyze", "prebuilt-receipt")
+            .path("/documentModels/{modelId}:analyze", "prebuilt-invoice")
             .post({
                 contentType: "application/json",
                 body: {
-                    base64Source: request.params.imageUrl
+                    base64Source: request.params.dataUrl
                 }
             });
 
-        context.log('Image sent');
+        context.log('File sent');
         if (isUnexpected(initialResponse)) {
             return {body: JSON.stringify({result: initialResponse.body.error})};
         }
@@ -43,6 +43,6 @@ app.http('processImage', {
             return {body: JSON.stringify({result:poller.body}) };
         }
         
-        return {body: JSON.stringify({result: 'Image processing failed!'})};
+        return {body: JSON.stringify({result: 'File processing failed!'})};
     }
 });
