@@ -25,4 +25,4 @@ I would say that the Vision AI is pretty good at extracting the basic informatio
 - Billed products (quantity, unit price, VAT percent and total)
 - Payment details (IBAN and SWIFT)
 
-However, it couldn't find some relatively useful information like the invoice's reference number, product codes or discounts (of course there's a chance that my test invoices were bad). But overall I would say that while there's room for improvement, the Vision AI is pretty good at extracting the basic information.
+However, it couldn't find some relatively useful information like the invoice's reference number or product specific discounts (of course there's a chance that my test invoices were bad). But overall I would say that while there's room for improvement, the Vision AI is pretty good at extracting the basic information.
